@@ -1,6 +1,12 @@
-name: GitHub Actions Demo
+name: Update GitHub Project from Excel
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      excel_file_path:
+        description: 'Path to Excel file'
+        required: true
+        default: 'GitHubExport2.xlsx'
 
 jobs:
   echo_hello_world:
