@@ -1,89 +1,38 @@
 name: Update GitHub Project from Excel
 
 on:
-  workflow_dispatch: # 手動実行トリガー
+  workflow_dispatch:
     inputs:
       excel_file_path:
-        description: 'Path to the Excel file in the repository'
+        description: 'Path to Excel file'
         required: true
-        default: 'path/to/your/excel_file.xlsx'
-      project_name:
-        description: 'Name of the GitHub Project'
-        required: true
-        default: 'Your Project Name'
+        default: 'GitHubExport2.xlsx'
 
 jobs:
   update_project:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install gnumeric # Excelファイルの読み込みにgnumericを使用
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'  # または、プロジェクトで使用している.NETのバージョン
 
-      - name: Update project
-        uses: nakagawahideaki/update-github-project-action@main # 専用のアクションを作成することを推奨
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          excel_file_path: ${{ inputs.excel_file_path }}
-          project_name: ${{ inputs.project_name }}
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
+    - name: Run executable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+      run: |
+        $githubToken = "${{ secrets.GITHUB_TOKEN }}"
+        $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
+        $projectName = "${{ secrets.PROJECT_NAME }}"
+        $owner = "${{ github.repository_owner }}"
+        $repo = "${{ github.event.repository.name }}"
 
-# update-github-project-action の内容(Dockerfile)
-# Dockerイメージとして作成し、GitHub Packagesなどに登録する
-# FROM ubuntu:latest
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     gnumeric \
-#     software-properties-common \
-#     && rm -rf /var/lib/apt/lists/*
-# COPY entrypoint.sh /entrypoint.sh
-# ENTRYPOINT ["/entrypoint.sh"]
+        $exePath = "YourProject/bin/Release/net6.0/YourProject.exe"
 
-# entrypoint.sh の内容
-#!/bin/bash
-
-set -e
-
-# Excelファイルからデータを取得 (gnumericを使用)
-ssconvert --export-type=Gnumeric_stf:stf_assistant ${{ inputs.excel_file_path }} /tmp/data.csv
-# 必要な処理を実行 (例: Issueの作成とプロジェクトへの追加)
-
-# GraphQL クエリを実行するためのツールをインストール (例: jq)
-apt-get update && apt-get install -y jq
-
-# GitHub API を使用してIssueを作成し、プロジェクトに追加する処理
-# 以下は例であり、実際の処理に合わせて修正が必要
-create_and_add_issue() {
-  title="$1"
-  body="$2"
-
-  issue_id=$(gh api graphql -f query='
-    mutation ($repositoryId: ID!, $title: String!, $body: String!) {
-      createIssue(input: {repositoryId: $repositoryId, title: $title, body: $body}) {
-        issue {
-          id
-        }
-      }
-    }' -f variables='{"repositoryId":"${{ github.repository.node_id }}", "title":"'$title'", "body":"'$body'"}' | jq -r '.data.createIssue.issue.id')
-
-  gh api graphql -f query='
-    mutation ($projectId: ID!, $contentId: ID!) {
-      addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-        item {
-          id
-        }
-      }
-    }' -f variables='{"projectId":"'"${{ inputs.project_id }}"'", "contentId":"'$issue_id'"}'
-}
-
-
-# CSV ファイルからデータを読み込み、各行に対して処理を実行
-while IFS=, read -r title body; do
-  create_and_add_issue "$title" "$body"
-done < <(tail -n +2 /tmp/data.csv) # ヘッダー行をスキップ
-
-echo "Finished."
+        & $exePath $githubToken $excelFilePath $projectName $owner $repo
+      shell: pwsh
