@@ -9,6 +9,13 @@ on:
         default: 'GitHubExport2.xlsx'
 
 jobs:
+  update_project:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
   echo_hello_world:
     runs-on: ubuntu-latest
     steps:
