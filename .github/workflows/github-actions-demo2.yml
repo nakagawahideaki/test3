@@ -1,0 +1,38 @@
+name: Update GitHub Project from Excel
+
+on:
+  workflow_dispatch:
+    inputs:
+      excel_file_path:
+        description: 'Path to Excel file'
+        required: true
+        default: 'GitHubExport2.xlsx'
+
+jobs:
+  update_project:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'  # または、プロジェクトで使用している.NETのバージョン
+
+    - name: Run executable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+      run: |
+        $githubToken = "${{ secrets.GITHUB_TOKEN }}"
+        $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
+        $projectName = "${{ secrets.PROJECT_NAME }}"
+        $owner = "${{ github.repository_owner }}"
+        $repo = "${{ github.event.repository.name }}"
+
+        $exePath = "YourProject/bin/Release/net6.0/YourProject.exe"
+
+        & $exePath $githubToken $excelFilePath $projectName $owner $repo
+      shell: pwsh
