@@ -1,4 +1,4 @@
-name: Update GitHub Project from Excel Test
+name: Update GitHub Project from Excel
 
 on:
   workflow_dispatch:
