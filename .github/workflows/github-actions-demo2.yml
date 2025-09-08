@@ -24,7 +24,7 @@ jobs:
     - name: Run executable
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PROJECT_NAME: ${{ "KanbanTest" }}
+        PROJECT_NAME: ${{ env.PROJECT_NAME }}
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
