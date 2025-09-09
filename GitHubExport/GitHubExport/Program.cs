@@ -142,6 +142,54 @@ query ($owner: String!, $repo: String!, $projectName: String!) {
         }
     }
 
+    public async Task<string?> GetProjectIdFromProjectNumber(int projectNumber)
+    {
+        // GraphQLリクエストの作成
+        var request = new GraphQLRequest
+        {
+            // プロジェクトIDを取得するためのクエリ (numberパラメータを使用)
+            Query = @"
+query ($owner: String!, $repo: String!, $projectNumber: Int!) {
+  repository(owner: $owner, name: $repo) {
+    projectV2(number: $projectNumber) { 
+      id
+    }
+  }
+}",
+            // クエリ変数
+            Variables = new
+            {
+                owner = _owner,
+                repo = _repo,
+                projectNumber = projectNumber // プロジェクト番号を渡す
+            }
+        };
+
+        // GraphQLクエリの実行
+        var response = await _client.SendQueryAsync<dynamic>(request);
+
+        // エラー処理
+        if (response.Errors != null && response.Errors.Length > 0)
+        {
+            foreach (var error in response.Errors)
+            {
+                Console.WriteLine($"GraphQL Error: {error.Message}");
+            }
+            throw new Exception("GraphQL request failed.");
+        }
+
+        // プロジェクトIDを返す
+        try
+        {
+            return response.Data.repository.projectV2.id.ToString(); // nodes[0]は不要
+        }
+        catch
+        {
+            Console.WriteLine($"Project with number '{projectNumber}' not found.");
+            return null;
+        }
+    }
+
     // Issueを作成する
     private async Task<string> CreateIssue(string title, string body)
     {
@@ -288,8 +336,8 @@ public class Example
         //var repo = "test3";
         var githubToken = args[0];
         var excelFilePath = args[1];
-        var projectId = args[2];
-        //var projectName = args[2];
+        //var projectId = args[2];
+        var projectNumber = args[2];
         var owner = args[3];
         var repo = args[4];
 
@@ -297,6 +345,7 @@ public class Example
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
         // プロジェクトIDを取得
         //var projectId = await updater.GetProjectId(projectName);
+        var projectId = await updater.GetProjectIdFromProjectNumber(Int32.Parse(projectNumber));
 
         // プロジェクトIDが取得できた場合
         if (projectId != null)
