@@ -91,24 +91,21 @@ query($owner: String!, $repo: String!) {
         }
     }
 
-    // プロジェクトIDを取得する
-    public async Task<string?> GetProjectId(string projectName)
+    public async Task<int?> GetProjectId(string projectName)
     {
-        // GraphQLリクエストの作成
         var request = new GraphQLRequest
         {
-            // プロジェクトIDを取得するためのクエリ
             Query = @"
 query ($owner: String!, $repo: String!, $projectName: String!) {
   repository(owner: $owner, name: $repo) {
     projectsV2(query: $projectName, first: 1) {
       nodes {
         id
+        number # ← numberフィールドを追加
       }
     }
   }
 }",
-            // クエリ変数
             Variables = new
             {
                 owner = _owner,
@@ -117,30 +114,80 @@ query ($owner: String!, $repo: String!, $projectName: String!) {
             }
         };
 
-        // GraphQLクエリの実行
         var response = await _client.SendQueryAsync<dynamic>(request);
 
-        // エラー処理
-        if (response.Errors != null && response.Errors.Length > 0)
+        if (response.Errors != null && response.Errors.Any())
         {
             foreach (var error in response.Errors)
             {
                 Console.WriteLine($"GraphQL Error: {error.Message}");
             }
-            throw new Exception("GraphQL request failed.");
+            // エラーをスローするのではなく、nullを返すように変更
+            return null;
         }
 
-        // プロジェクトIDを返す
         try
         {
-            return response.Data.repository.projectsV2.nodes[0].id.ToString();
+            // numberフィールドを使用し、intにキャスト
+            return (int)response.Data.repository.projectsV2.nodes[0].number;
         }
         catch
         {
-            Console.WriteLine($"Project '{projectName}' not found.");
+            Console.WriteLine($"Project '{projectName}' not found or could not retrieve number.");
             return null;
         }
     }
+
+    // プロジェクトIDを取得する
+//    public async Task<string?> GetProjectId(string projectName)
+//    {
+//        // GraphQLリクエストの作成
+//        var request = new GraphQLRequest
+//        {
+//            // プロジェクトIDを取得するためのクエリ
+//            Query = @"
+//query ($owner: String!, $repo: String!, $projectName: String!) {
+//  repository(owner: $owner, name: $repo) {
+//    projectsV2(query: $projectName, first: 1) {
+//      nodes {
+//        id
+//      }
+//    }
+//  }
+//}",
+//            // クエリ変数
+//            Variables = new
+//            {
+//                owner = _owner,
+//                repo = _repo,
+//                projectName = projectName
+//            }
+//        };
+
+//        // GraphQLクエリの実行
+//        var response = await _client.SendQueryAsync<dynamic>(request);
+
+//        // エラー処理
+//        if (response.Errors != null && response.Errors.Length > 0)
+//        {
+//            foreach (var error in response.Errors)
+//            {
+//                Console.WriteLine($"GraphQL Error: {error.Message}");
+//            }
+//            throw new Exception("GraphQL request failed.");
+//        }
+
+//        // プロジェクトIDを返す
+//        try
+//        {
+//            return response.Data.repository.projectsV2.nodes[0].id.ToString();
+//        }
+//        catch
+//        {
+//            Console.WriteLine($"Project '{projectName}' not found.");
+//            return null;
+//        }
+//    }
 
     // Issueを作成する
     private async Task<string> CreateIssue(string title, string body)
@@ -301,7 +348,7 @@ public class Example
         if (projectId != null)
         {
             // Excelデータに基づいてプロジェクトを更新
-            await updater.UpdateExcelDataToProject(excelFilePath, projectId);
+            await updater.UpdateExcelDataToProject(excelFilePath, projectId.ToString());
             Console.WriteLine("Finished.");
         }
     }
