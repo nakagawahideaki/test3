@@ -30,7 +30,7 @@ jobs:
         echo "githubToken: $githubToken"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
         echo "excelFilePath: $excelFilePath"
-        $projectName = "${{ env.PROJECT_NAME }}"
+        $projectName = "${{ 'KanbanTest' }}"
         echo "projectName: $projectName"
         $owner = "${{ github.repository_owner }}"
         echo "owner: $owner"
