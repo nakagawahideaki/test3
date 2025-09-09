@@ -28,7 +28,7 @@ jobs:
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        $projectName =  = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('22'))
+        $projectName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('22'))
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
