@@ -116,6 +116,8 @@ query ($owner: String!, $repo: String!, $projectName: String!) {
 
         var response = await _client.SendQueryAsync<dynamic>(request);
 
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented));
+
         if (response.Errors != null && response.Errors.Any())
         {
             foreach (var error in response.Errors)
