@@ -24,13 +24,13 @@ jobs:
     - name: Run executable
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PROJECT_NAME: ${{ env.PROJECT_NAME }}
+        PROJECT_NAME: "KanbanTest"
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         echo "githubToken: $githubToken"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
         echo "excelFilePath: $excelFilePath"
-        $projectName = "${{ 'KanbanTest' }}"
+        $projectName = "KanbanTest"
         echo "projectName: $projectName"
         $owner = "${{ github.repository_owner }}"
         echo "owner: $owner"
