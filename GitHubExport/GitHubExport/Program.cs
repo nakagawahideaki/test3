@@ -295,11 +295,17 @@ public class Example
         //var projectName = "KanbanTest";
         //var owner = "nakagawahideaki";
         //var repo = "test3";
-        var githubToken = "aaa";
+        var githubToken = args[0];
         var excelFilePath = args[1];
         var projectName = args[2];
         var owner = args[3];
         var repo = args[4];
+
+        Console.WriteLine(githubToken);
+        Console.WriteLine(excelFilePath);
+        Console.WriteLine(projectName);
+        Console.WriteLine(owner);
+        Console.WriteLine(repo);
 
         // GitHubProjectUpdaterインスタンスを作成
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
