@@ -291,7 +291,7 @@ public class Example
         //var repo = "test3";
         var githubToken = args[0];
         var excelFilePath = args[1];
-        var projectName = args[2];
+        var projectName = "KanbanTest";
         var owner = args[3];
         var repo = args[4];
 
