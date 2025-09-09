@@ -28,11 +28,12 @@ jobs:
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        $projectName = 'KanbanTest'
+        # $projectName = 'KanbanTest'
+        $test = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
         $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
 
-        & $exePath $githubToken $excelFilePath $projectName $owner $repo
+        & $exePath $githubToken $excelFilePath $test $owner $repo
       shell: pwsh
