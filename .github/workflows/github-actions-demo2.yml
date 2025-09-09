@@ -32,7 +32,8 @@ jobs:
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
-        $exePath = "YourProject/bin/Release/net8.0/YourProject.exe"
+        # $exePath = "YourProject/bin/Release/net8.0/YourProject.exe"
+        $exePath = "${{ github.workspace }}\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
 
         & $exePath $githubToken $excelFilePath $projectName $owner $repo # repoも修正
 shell: pwsh
