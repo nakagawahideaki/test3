@@ -24,16 +24,15 @@ jobs:
     - name: Run executable
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # PROJECT_NAME: 'KanbanTest1'
+        PROJECT_NAME: 'KanbanTest'
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        # $projectName = 'KanbanTest2'
-        $test = 'KanbanTest3'
+        $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
         $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
 
-        & $exePath $githubToken $excelFilePath $test $owner $repo
+        & $exePath $githubToken $excelFilePath $projectName $owner $repo
       shell: pwsh
