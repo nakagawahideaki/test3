@@ -274,15 +274,6 @@ public class Example
     // メイン関数
     public static async Task Main(string[] args)
     {
-        Console.WriteLine(args[4]);
-        Console.WriteLine(args[3]);
-        Console.WriteLine(args[2]);
-        Console.WriteLine(args[1]);
-        Console.WriteLine(args[0]);
-
-        Console.WriteLine("3秒間停止します...");
-        Thread.Sleep(3000);
-
         if (args.Length < 5)
         {
             Console.WriteLine("Error: Insufficient arguments.");
@@ -297,24 +288,15 @@ public class Example
         //var repo = "test3";
         var githubToken = args[0];
         var excelFilePath = args[1];
-        var projectName = args[2];
+        var projectId = args[2];
+        //var projectName = args[2];
         var owner = args[3];
         var repo = args[4];
-
-
-        Console.WriteLine("2秒間停止します...");
-        Thread.Sleep(2000);
-
-        Console.WriteLine(githubToken);
-        Console.WriteLine(excelFilePath);
-        Console.WriteLine(projectName);
-        Console.WriteLine(owner);
-        Console.WriteLine(repo);
 
         // GitHubProjectUpdaterインスタンスを作成
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
         // プロジェクトIDを取得
-        var projectId = await updater.GetProjectId(projectName);
+        //var projectId = await updater.GetProjectId(projectName);
 
         // プロジェクトIDが取得できた場合
         if (projectId != null)
