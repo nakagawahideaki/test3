@@ -13,11 +13,11 @@ jobs:
     runs-on: windows-latest
 
     permissions:
-      projects: write
+      actions: write
       
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
