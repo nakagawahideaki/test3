@@ -27,16 +27,12 @@ jobs:
         PROJECT_NAME: "KanbanTest"
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
-        echo "githubToken: $githubToken"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        echo "excelFilePath: $excelFilePath"
-        $projectName = "KanbanTest"
-        echo "projectName: $projectName"
+        $projectName = "${{ secrets.PROJECT_NAME }}"
         $owner = "${{ github.repository_owner }}"
-        echo "owner: $owner"
         $repo = "${{ github.event.repository.name }}"
-        echo "repo: $repo"
-        $exePath = "GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
-        echo "exePath: $exePath"
-        & $exePath $githubToken $excelFilePath $projectName $owner $repo
+
+        $exePath = "YourProject/bin/Release/net6.0/YourProject.exe"
+
+        & $exePath $githubToken $excelFilePath $projectName $owner $rep
       shell: pwsh
