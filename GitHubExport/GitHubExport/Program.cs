@@ -284,16 +284,22 @@ public class Example
         }
 
         // GitHubトークン、Excelファイルパス、プロジェクト名、所有者、リポジトリを設定
-        //var githubToken = "***";
+        //var githubToken = "aaa";
         //var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport2.xlsx";
         //var projectName = "KanbanTest";
         //var owner = "nakagawahideaki";
         //var repo = "test3";
         var githubToken = args[0];
         var excelFilePath = args[1];
-        var projectName = "KanbanTest";
+        var projectName = args[2];
         var owner = args[3];
         var repo = args[4];
+
+        Console.WriteLine(args[0]);
+        Console.WriteLine(args[1]);
+        Console.WriteLine(args[2]);
+        Console.WriteLine(args[3]);
+        Console.WriteLine(args[4]);
 
         // GitHubProjectUpdaterインスタンスを作成
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
