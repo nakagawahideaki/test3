@@ -274,25 +274,26 @@ public class Example
     // メイン関数
     public static async Task Main(string[] args)
     {
+        Console.WriteLine("3秒間停止します...");
+        Thread.Sleep(3000);
+
+        if (args.Length < 5)
+        {
+            Console.WriteLine("Error: Insufficient arguments.");
+            return;
+        }
+
         // GitHubトークン、Excelファイルパス、プロジェクト名、所有者、リポジトリを設定
         //var githubToken = "***";
         //var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport2.xlsx";
         //var projectName = "KanbanTest";
         //var owner = "nakagawahideaki";
         //var repo = "test3";
-        var githubToken = args.FirstOrDefault(a => a.StartsWith("--github-token"))?.Split('=')[1];
-        var excelFilePath = args.FirstOrDefault(a => a.StartsWith("--excel-file-path"))?.Split('=')[1];
-        var projectName = args.FirstOrDefault(a => a.StartsWith("--project-name"))?.Split('=')[1];
-        var owner = args.FirstOrDefault(a => a.StartsWith("--owner"))?.Split('=')[1];
-        var repo = args.FirstOrDefault(a => a.StartsWith("--repo"))?.Split('=')[1];
-
-        // 引数のチェック
-        if (string.IsNullOrEmpty(githubToken) || string.IsNullOrEmpty(excelFilePath) ||
-            string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(repo))
-        {
-            Console.WriteLine("Missing required arguments");
-            return;
-        }
+        var githubToken = args[0];
+        var excelFilePath = args[1];
+        var projectName = args[2];
+        var owner = args[3];
+        var repo = args[4];
 
         // GitHubProjectUpdaterインスタンスを作成
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
