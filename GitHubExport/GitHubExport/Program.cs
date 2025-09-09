@@ -274,6 +274,12 @@ public class Example
     // メイン関数
     public static async Task Main(string[] args)
     {
+        Console.WriteLine(args[0]);
+        Console.WriteLine(args[1]);
+        Console.WriteLine(args[2]);
+        Console.WriteLine(args[3]);
+        Console.WriteLine(args[4]);
+
         Console.WriteLine("3秒間停止します...");
         Thread.Sleep(3000);
 
@@ -294,12 +300,6 @@ public class Example
         var projectName = args[2];
         var owner = args[3];
         var repo = args[4];
-
-        Console.WriteLine(args[0]);
-        Console.WriteLine(args[1]);
-        Console.WriteLine(args[2]);
-        Console.WriteLine(args[3]);
-        Console.WriteLine(args[4]);
 
         // GitHubProjectUpdaterインスタンスを作成
         var updater = new GitHubProjectUpdater(githubToken, owner, repo);
