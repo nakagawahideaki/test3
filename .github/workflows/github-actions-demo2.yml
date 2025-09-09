@@ -11,9 +11,6 @@ on:
 jobs:
   update_project:
     runs-on: windows-latest
-
-    permissions:
-      actions: write
       
     steps:
     - name: Checkout repository
@@ -26,10 +23,12 @@ jobs:
 
     - name: Run executable
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
         PROJECT_NAME: 'KanbanTest'
       run: |
-        $githubToken = "${{ secrets.GITHUB_TOKEN }}"
+        # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
+        $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
