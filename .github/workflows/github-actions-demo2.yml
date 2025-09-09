@@ -27,16 +27,16 @@ jobs:
         PROJECT_NAME: ${{ env.PROJECT_NAME }}
       run: |
         $githubToken = "${{ secrets.GITHUB_TOKEN }}"
-        Write-Host "githubToken: $githubToken"
+        echo "githubToken: $githubToken"
         $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        Write-Host "excelFilePath: $excelFilePath"
+        echo "excelFilePath: $excelFilePath"
         $projectName = "${{ env.PROJECT_NAME }}"
-        Write-Host "projectName: $projectName"
+        echo "projectName: $projectName"
         $owner = "${{ github.repository_owner }}"
-        Write-Host "owner: $owner"
+        echo "owner: $owner"
         $repo = "${{ github.event.repository.name }}"
-        Write-Host "repo: $repo"
+        echo "repo: $repo"
         $exePath = "GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
-        Write-Host "exePath: $exePath"
+        echo "exePath: $exePath"
         & $exePath $githubToken $excelFilePath $projectName $owner $repo
       shell: pwsh
