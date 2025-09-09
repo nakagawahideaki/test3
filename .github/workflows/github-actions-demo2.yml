@@ -1,9 +1,5 @@
 name: Update GitHub Project from Excel
 
-permissions:
-  contents: read
-  projects: write
-
 on:
   workflow_dispatch:
     inputs:
