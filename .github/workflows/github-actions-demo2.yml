@@ -29,6 +29,17 @@ jobs:
         # ファイルをダウンロード
         Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
+
+        # ファイルサイズを確認
+        $fileSize = (Get-Item $excelFilePath).Length
+        Write-Host "ファイルサイズ: $fileSize バイト"
+
+        # ファイルサイズが0の場合はエラー
+        if ($fileSize -eq 0) {
+                Write-Error "ダウンロードしたファイルは空です。"
+                exit 1
+        }
+    
     - name: Run executable
       run: |
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
