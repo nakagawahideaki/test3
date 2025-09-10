@@ -22,10 +22,6 @@ jobs:
         dotnet-version: '8.0.x'  # または、プロジェクトで使用している.NETのバージョン
 
     - name: Run executable
-      env:
-        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
-        PROJECT_NAME: 'KanbanTest'
       run: |
         # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
