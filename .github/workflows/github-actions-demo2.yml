@@ -26,26 +26,7 @@ jobs:
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
         
-
-        # Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
-        try {
-            Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
-            if (-not (Test-Path $excelFilePath)) {
-                throw "ファイルのダウンロードに失敗しました。"
-            }
-            Write-Host "ファイルが正常にダウンロードされました: $excelFilePath"
-        } catch {
-            Write-Error "エラーが発生しました: $_"
-            exit 1  # エラーが発生した場合は、ワークフローを失敗させる
-        }
-
-        if (Test-Path $excelFilePath) {
-          Write-Host "ファイルは存在します: $excelFilePath"
-        } else {
-        Write-Host "ファイルが存在しません: $excelFilePath"
-        }
-        echo "Processing Excel file..."
-        python your_script.py "$env:TEMP\GitHubExport.xlsx"  # Pythonスクリプトなどを呼び出し
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
     - name: Run executable
       run: |
