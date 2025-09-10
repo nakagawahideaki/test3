@@ -32,7 +32,7 @@ jobs:
         # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
         # $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        # $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
+        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
