@@ -45,9 +45,20 @@ jobs:
 
         # ClosedXMLを使ってExcelファイルを読み込む
         try {
+        # ImportExcelモジュールをインストール
         Install-Module -Name ImportExcel -Force -SkipPublisherCheck -Scope CurrentUser
-        $workbook = [ClosedXML.Excel.XLWorkbook]::new($excelFilePath)
+
+        # ImportExcelを使ってExcelファイルを読み込む
+        try {
+        $data = Import-Excel -Path $excelFilePath
         Write-Host "Excelファイルが正常に読み込まれました。"
+
+        # データを確認するために、最初の数行を表示
+        $data | Select-Object -First 5 | Format-Table
+        }
+        catch {
+        Write-Error "Excelファイルの読み込み中にエラーが発生しました: $_"
+        }
 
         # シート名を出力する
         foreach ($sheet in $workbook.Worksheets)
