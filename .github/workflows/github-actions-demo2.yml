@@ -27,12 +27,6 @@ jobs:
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
         
 
-        if (Test-Path $excelFilePath) {
-          Write-Host "ファイルは存在します: $excelFilePath"
-        } else {
-        Write-Host "ファイルが存在しません: $excelFilePath"
-        }
-
         # Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
         try {
             Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
@@ -43,6 +37,12 @@ jobs:
         } catch {
             Write-Error "エラーが発生しました: $_"
             exit 1  # エラーが発生した場合は、ワークフローを失敗させる
+        }
+
+        if (Test-Path $excelFilePath) {
+          Write-Host "ファイルは存在します: $excelFilePath"
+        } else {
+        Write-Host "ファイルが存在しません: $excelFilePath"
         }
 
     - name: Run executable
