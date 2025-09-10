@@ -1,27 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Transactions;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
-
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
-using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 public class GitHubProjectUpdater
 {
@@ -325,6 +306,12 @@ public class Example
     // メイン関数
     public static async Task Main(string[] args)
     {
+        Console.WriteLine(args[0]);
+        Console.WriteLine(args[1]);
+        Console.WriteLine(args[2]);
+        Console.WriteLine(args[3]);
+        Console.WriteLine(args[4]);
+
         //if (args.Length < 5)
         //{
         //    Console.WriteLine("Error: Insufficient arguments.");
