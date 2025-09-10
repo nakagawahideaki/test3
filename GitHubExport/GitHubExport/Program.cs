@@ -265,35 +265,35 @@ public class Example
         //}
 
         // ClosedXMLを使用して仮コピーしたExcelファイルを開く
-        //using (var tempWorkbook = new XLWorkbook(tempFilePath))
-        //{
-        //    var tempWorksheet = tempWorkbook.Worksheet(1); // 1番目のシートを取得
-        //    Console.WriteLine("Contents of the temporary Excel file:");
+        using (var tempWorkbook = new XLWorkbook(tempFilePath))
+        {
+            var tempWorksheet = tempWorkbook.Worksheet(1); // 1番目のシートを取得
+            Console.WriteLine("Contents of the temporary Excel file:");
 
-        //    // 行数を取得し、それぞれのセルの値を表示
-        //    var lastRowUsed = tempWorksheet.LastRowUsed();
-        //    for (int row = 1; row <= lastRowUsed.RowNumber(); row++)
-        //    {
-        //        var title = tempWorksheet.Cell(row, 1).Value.ToString();
-        //        var body = tempWorksheet.Cell(row, 2).Value.ToString();
-        //        Console.WriteLine($"Row {row}: Title = {title}, Body = {body}");
-        //    }
-        //}
+            // 行数を取得し、それぞれのセルの値を表示
+            var lastRowUsed = tempWorksheet.LastRowUsed();
+            for (int row = 1; row <= lastRowUsed.RowNumber(); row++)
+            {
+                var title = tempWorksheet.Cell(row, 1).Value.ToString();
+                var body = tempWorksheet.Cell(row, 2).Value.ToString();
+                Console.WriteLine($"Row {row}: Title = {title}, Body = {body}");
+            }
+        }
 
 
 
-        //// GitHubProjectUpdaterインスタンスを作成
-        //var updater = new GitHubProjectUpdater(githubToken, owner, repo);
-        //var projectId = await updater.GetProjectId(projectName);
+        // GitHubProjectUpdaterインスタンスを作成
+        var updater = new GitHubProjectUpdater(githubToken, owner, repo);
+        var projectId = await updater.GetProjectId(projectName);
 
-        //if (projectId != null)
-        //{
-        //    // Excelデータに基づいてプロジェクトを更新
-        //    await updater.UpdateExcelDataToProject(tempFilePath, projectId.ToString());
-        //    Console.WriteLine("Finished.");
-        //}
+        if (projectId != null)
+        {
+            // Excelデータに基づいてプロジェクトを更新
+            await updater.UpdateExcelDataToProject(tempFilePath, projectId.ToString());
+            Console.WriteLine("Finished.");
+        }
 
         // プログラム終了後に一時ファイルを削除
-        //File.Delete(tempFilePath);
+        File.Delete(tempFilePath);
     }
 }
