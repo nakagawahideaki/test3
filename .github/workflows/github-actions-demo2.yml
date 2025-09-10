@@ -42,12 +42,19 @@ jobs:
         # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
         # $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
-        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
+        # $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
         $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
         
-        & $exePath $githubToken $excelFilePath $projectName $owner $repo
+        # & $exePath $githubToken $excelFilePath $projectName $owner $repo
+        try {
+          & $exePath $githubToken $excelFilePath $projectName $owner $repo
+          Write-Host "実行が成功しました。"
+        } catch {
+          Write-Error "実行中にエラーが発生しました: $_"
+          exit 1  # 実行が失敗した場合は、ワークフローを失敗させる
+        }
       shell: pwsh
