@@ -40,24 +40,7 @@ jobs:
         } 
         
         # ダウンロードしたファイルのパスを表示
-        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"
-        
-        # Excelアプリを起動して、保存する
-        try {
-          $excel = New-Object -ComObject Excel.Application
-          $excel.Visible = $false  # Excelウィンドウを非表示にする
-
-          $workbook = $excel.Workbooks.Open($excelFilePath)
-
-          # ファイルを再保存する
-          $workbook.SaveAs("$env:TEMP\EditableGitHubExport.xlsx")
-          $workbook.Close($false)
-          $excel.Quit()
-
-          Write-Host "ファイルを編集可能な状態で保存しました。"
-        } catch {
-          Write-Error "Excel操作中にエラーが発生しました: $_"
-        }
+        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"       
     
     - name: Run executable
       run: |
