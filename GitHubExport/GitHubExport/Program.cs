@@ -1,346 +1,252 @@
-﻿using ClosedXML.Excel;
-using GraphQL;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
-using System.Net.Http.Headers;
+﻿    using ClosedXML.Excel;
+    using GraphQL;
+    using GraphQL.Client.Http;
+    using GraphQL.Client.Serializer.Newtonsoft;
+    using System.Net.Http.Headers;
+    using System.IO;
 
-public class GitHubProjectUpdater
-{
-    // GraphQLクライアント
-    private readonly GraphQLHttpClient _client;
-    // リポジトリの所有者名
-    private readonly string _owner;
-    // リポジトリ名
-    private readonly string _repo;
-
-    // コンストラクタ：GitHubトークン、所有者、リポジトリ名を受け取る
-    public GitHubProjectUpdater(string githubToken, string owner, string repo)
+    public class GitHubProjectUpdater
     {
-        _owner = owner;
-        _repo = repo;
+        private readonly GraphQLHttpClient _client;
+        private readonly string _owner;
+        private readonly string _repo;
 
-        // GraphQLクライアントの初期化
-        _client = new GraphQLHttpClient(new GraphQLHttpClientOptions
+        public GitHubProjectUpdater(string githubToken, string owner, string repo)
         {
-            EndPoint = new Uri("https://api.github.com/graphql")
-        }, new NewtonsoftJsonSerializer());
+            _owner = owner;
+            _repo = repo;
 
-        // 認証ヘッダーの設定
-        _client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
-    }
-
-    // リポジトリIDを取得する
-    private async Task<string?> GetRepositoryId()
-    {
-        // GraphQLリクエストの作成
-        var request = new GraphQLRequest
-        {
-            // リポジトリIDを取得するためのクエリ
-            Query = @"
-query($owner: String!, $repo: String!) {
-  repository(owner: $owner, name: $repo) {
-    id
-  }
-}",
-            // クエリ変数
-            Variables = new { owner = _owner, repo = _repo }
-        };
-
-        // GraphQLクエリの実行
-        var response = await _client.SendQueryAsync<dynamic>(request);
-
-        // エラー処理
-        if (response.Errors != null && response.Errors.Length > 0)
-        {
-            foreach (var error in response.Errors)
+            _client = new GraphQLHttpClient(new GraphQLHttpClientOptions
             {
-                Console.WriteLine($"GraphQL Error: {error.Message}");
-            }
+                EndPoint = new Uri("https://api.github.com/graphql")
+            }, new NewtonsoftJsonSerializer());
 
-            throw new Exception("GraphQL request failed.");
+            _client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
         }
 
-        // リポジトリIDを返す
-        try
+        private async Task<string?> GetRepositoryId()
         {
-            return response.Data.repository.id.ToString();
-        }
-        catch
-        {
-            Console.WriteLine($"Repository '{_owner}/{_repo}' not found.");
-            return null;
-        }
-    }
-
-    //    public async Task<int?> GetProjectId(string projectName)
-    //    {
-    //        var request = new GraphQLRequest
-    //        {
-    //            Query = @"
-    //query ($owner: String!, $repo: String!, $projectName: String!) {
-    //  repository(owner: $owner, name: $repo) {
-    //    projectsV2(query: $projectName, first: 1) {
-    //      nodes {
-    //        id
-    //        number # ← numberフィールドを追加
-    //      }
-    //    }
-    //  }
-    //}",
-    //            Variables = new
-    //            {
-    //                owner = _owner,
-    //                repo = _repo,
-    //                projectName = projectName
-    //            }
-    //        };
-
-    //        var response = await _client.SendQueryAsync<dynamic>(request);
-
-    //        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented));
-
-    //        if (response.Errors != null && response.Errors.Any())
-    //        {
-    //            foreach (var error in response.Errors)
-    //            {
-    //                Console.WriteLine($"GraphQL Error: {error.Message}");
-    //            }
-    //            // エラーをスローするのではなく、nullを返すように変更
-    //            return null;
-    //        }
-
-    //        try
-    //        {
-    //            // numberフィールドを使用し、intにキャスト
-    //            return (int)response.Data.repository.projectsV2.nodes[0].number;
-    //        }
-    //        catch
-    //        {
-    //            Console.WriteLine($"Project '{projectName}' not found or could not retrieve number.");
-    //            return null;
-    //        }
-    //    }
-
-    // プロジェクトIDを取得する
-    public async Task<string?> GetProjectId(string projectName)
-    {
-        // GraphQLリクエストの作成
-        var request = new GraphQLRequest
-        {
-            // プロジェクトIDを取得するためのクエリ
-            Query = @"
-query ($owner: String!, $repo: String!, $projectName: String!) {
-  repository(owner: $owner, name: $repo) {
-    projectsV2(query: $projectName, first: 1) {
-      nodes {
+            var request = new GraphQLRequest
+            {
+                Query = @"
+    query($owner: String!, $repo: String!) {
+      repository(owner: $owner, name: $repo) {
         id
       }
-    }
-  }
-}",
-            // クエリ変数
-            Variables = new
+    }",
+                Variables = new { owner = _owner, repo = _repo }
+            };
+
+            var response = await _client.SendQueryAsync<dynamic>(request);
+
+            if (response.Errors != null && response.Errors.Length > 0)
             {
-                owner = _owner,
-                repo = _repo,
-                projectName = projectName
-            }
-        };
-
-        // GraphQLクエリの実行
-        var response = await _client.SendQueryAsync<dynamic>(request);
-
-        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented));
-
-        // エラー処理
-        if (response.Errors != null && response.Errors.Length > 0)
-        {
-            foreach (var error in response.Errors)
-            {
-                Console.WriteLine($"GraphQL Error: {error.Message}");
-            }
-            throw new Exception("GraphQL request failed.");
-        }
-
-        // プロジェクトIDを返す
-        try
-        {
-            return response.Data.repository.projectsV2.nodes[0].id.ToString();
-        }
-        catch
-        {
-            Console.WriteLine($"Project '{projectName}' not found.");
-            return null;
-        }
-    }
-
-    // Issueを作成する
-    private async Task<string> CreateIssue(string title, string body)
-    {
-        // リポジトリIDの取得
-        string? repositoryId = await GetRepositoryId();
-
-        // リポジトリID取得失敗時のエラー処理
-        if (repositoryId == null)
-        {
-            throw new Exception("Failed to get repository ID.");
-        }
-
-        // GraphQLリクエストの作成
-        var createIssueRequest = new GraphQLRequest
-        {
-            // Issueを作成するためのクエリ
-            Query = @"
-mutation ($repositoryId: ID!, $title: String!, $body: String!) {
-  createIssue(input: {repositoryId: $repositoryId, title: $title, body: $body}) {
-    issue {
-      id
-    }
-  }
-}",
-            // クエリ変数
-            Variables = new
-            {
-                repositoryId = repositoryId,
-                title = title,
-                body = body
-            }
-        };
-
-        // GraphQLクエリの実行
-        var createIssueResponse = await _client.SendMutationAsync<dynamic>(createIssueRequest);
-
-        // エラー処理
-        if (createIssueResponse.Errors != null && createIssueResponse.Errors.Length > 0)
-        {
-            foreach (var error in createIssueResponse.Errors)
-            {
-                Console.WriteLine($"GraphQL Error: {error.Message}");
-            }
-
-            throw new Exception("GraphQL request failed.");
-        }
-
-        // IssueのIDを返す
-        return createIssueResponse.Data.createIssue.issue.id.ToString();
-    }
-
-    // プロジェクトにアイテムを追加する
-    public async Task AddProjectV2ItemById(string projectId, string contentId)
-    {
-        // GraphQLリクエストの作成
-        var request = new GraphQLRequest
-        {
-            // プロジェクトにアイテムを追加するためのクエリ
-            Query = @"
-mutation ($projectId: ID!, $contentId: ID!) {
-  addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-    item {
-      id
-    }
-  }
-}",
-            // クエリ変数
-            Variables = new
-            {
-                projectId = projectId,
-                contentId = contentId
-            }
-        };
-
-        // GraphQLクエリの実行
-        var response = await _client.SendMutationAsync<dynamic>(request);
-
-        // エラー処理
-        if (response.Errors != null && response.Errors.Length > 0)
-        {
-            foreach (var error in response.Errors)
-            {
-                Console.WriteLine($"GraphQL Error: {error.Message}");
-            }
-
-            throw new Exception("GraphQL request failed.");
-        }
-
-        // 成功メッセージを出力
-        Console.WriteLine($"Item added to project. Item ID: {contentId}");
-    }
-
-    // Excelデータに基づいてプロジェクトを更新する
-    public async Task UpdateExcelDataToProject(string excelFilePath, string projectId)
-    {
-        // Excelファイルを開く
-        using (var workbook = new XLWorkbook(excelFilePath))
-        {
-            // 1番目のワークシートを取得
-            var worksheet = workbook.Worksheet(1);
-            // 使用されている最後の行を取得
-            var lastRowUsed = worksheet.LastRowUsed();
-
-            // 各行を処理
-            for (int row = 2; row <= lastRowUsed?.RowNumber(); row++)
-            {
-                // タイトルと本文を取得
-                string title = worksheet.Cell(row, 1).Value.ToString();
-                string body = worksheet.Cell(row, 2).Value.ToString();
-
-                try
+                foreach (var error in response.Errors)
                 {
-                    // Issueを作成
-                    string issueId = await CreateIssue(title, body);
-                    // プロジェクトにIssueを追加
-                    await AddProjectV2ItemById(projectId, issueId);
+                    Console.WriteLine($"GraphQL Error: {error.Message}");
                 }
-                catch (Exception ex)
+                throw new Exception("GraphQL request failed.");
+            }
+
+            try
+            {
+                return response.Data.repository.id.ToString();
+            }
+            catch
+            {
+                Console.WriteLine($"Repository '{_owner}/{_repo}' not found.");
+                return null;
+            }
+        }
+
+        public async Task<string?> GetProjectId(string projectName)
+        {
+            var request = new GraphQLRequest
+            {
+                Query = @"
+    query ($owner: String!, $repo: String!, $projectName: String!) {
+      repository(owner: $owner, name: $repo) {
+        projectsV2(query: $projectName, first: 1) {
+          nodes {
+            id
+          }
+        }
+      }
+    }",
+                Variables = new
                 {
-                    Console.WriteLine($"Error processing row {row}: {ex.Message}");
+                    owner = _owner,
+                    repo = _repo,
+                    projectName = projectName
+                }
+            };
+
+            var response = await _client.SendQueryAsync<dynamic>(request);
+
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented));
+
+            if (response.Errors != null && response.Errors.Length > 0)
+            {
+                foreach (var error in response.Errors)
+                {
+                    Console.WriteLine($"GraphQL Error: {error.Message}");
+                }
+                return null;
+            }
+
+            try
+            {
+                return response.Data.repository.projectsV2.nodes[0].id.ToString();
+            }
+            catch
+            {
+                Console.WriteLine($"Project '{projectName}' not found.");
+                return null;
+            }
+        }
+
+        private async Task<string> CreateIssue(string title, string body)
+        {
+            string? repositoryId = await GetRepositoryId();
+
+            if (repositoryId == null)
+            {
+                throw new Exception("Failed to get repository ID.");
+            }
+
+            var createIssueRequest = new GraphQLRequest
+            {
+                Query = @"
+    mutation ($repositoryId: ID!, $title: String!, $body: String!) {
+      createIssue(input: {repositoryId: $repositoryId, title: $title, body: $body}) {
+        issue {
+          id
+        }
+      }
+    }",
+                Variables = new
+                {
+                    repositoryId = repositoryId,
+                    title = title,
+                    body = body
+                }
+            };
+
+            var createIssueResponse = await _client.SendMutationAsync<dynamic>(createIssueRequest);
+
+            if (createIssueResponse.Errors != null && createIssueResponse.Errors.Length > 0)
+            {
+                foreach (var error in createIssueResponse.Errors)
+                {
+                    Console.WriteLine($"GraphQL Error: {error.Message}");
+                }
+                throw new Exception("GraphQL request failed.");
+            }
+
+            return createIssueResponse.Data.createIssue.issue.id.ToString();
+        }
+
+        public async Task AddProjectV2ItemById(string projectId, string contentId)
+        {
+            var request = new GraphQLRequest
+            {
+                Query = @"
+    mutation ($projectId: ID!, $contentId: ID!) {
+      addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+        item {
+          id
+        }
+      }
+    }",
+                Variables = new
+                {
+                    projectId = projectId,
+                    contentId = contentId
+                }
+            };
+
+            var response = await _client.SendMutationAsync<dynamic>(request);
+
+            if (response.Errors != null && response.Errors.Length > 0)
+            {
+                foreach (var error in response.Errors)
+                {
+                    Console.WriteLine($"GraphQL Error: {error.Message}");
+                }
+                throw new Exception("GraphQL request failed.");
+            }
+
+            Console.WriteLine($"Item added to project. Item ID: {contentId}");
+        }
+
+        public async Task UpdateExcelDataToProject(string excelFilePath, string projectId)
+        {
+            using (var workbook = new XLWorkbook(excelFilePath))
+            {
+                var worksheet = workbook.Worksheet(1);
+                var lastRowUsed = worksheet.LastRowUsed();
+
+                for (int row = 2; row <= lastRowUsed?.RowNumber(); row++)
+                {
+                    string title = worksheet.Cell(row, 1).Value.ToString();
+                    string body = worksheet.Cell(row, 2).Value.ToString();
+
+                    try
+                    {
+                        string issueId = await CreateIssue(title, body);
+                        await AddProjectV2ItemById(projectId, issueId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing row {row}: {ex.Message}");
+                    }
                 }
             }
         }
     }
-}
 
-// 実行例
-public class Example
-{
-    // メイン関数
-    public static async Task Main(string[] args)
+    // 実行例
+    public class Example
     {
-        Console.WriteLine(args[0]);
-        Console.WriteLine(args[1]);
-        Console.WriteLine(args[2]);
-        Console.WriteLine(args[3]);
-        Console.WriteLine(args[4]);
-
-        //if (args.Length < 5)
-        //{
-        //    Console.WriteLine("Error: Insufficient arguments.");
-        //    return;
-        //}
-
-        // GitHubトークン、Excelファイルパス、プロジェクト名、所有者、リポジトリを設定
-        //var githubToken = "aaa";
-        //var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport2.xlsx";
-        //var projectName = "KanbanTest";
-        //var owner = "nakagawahideaki";
-        //var repo = "test3";
-        var githubToken = args[0];
-        var excelFilePath = args[1];
-        var projectName = args[2];
-        var owner = args[3];
-        var repo = args[4];
-
-        // GitHubProjectUpdaterインスタンスを作成
-        var updater = new GitHubProjectUpdater(githubToken, owner, repo);
-        // プロジェクトIDを取得
-        var projectId = await updater.GetProjectId(projectName);
-
-        // プロジェクトIDが取得できた場合
-        if (projectId != null)
+        public static async Task Main(string[] args)
         {
-            // Excelデータに基づいてプロジェクトを更新
-            await updater.UpdateExcelDataToProject(excelFilePath, projectId.ToString());
-            Console.WriteLine("Finished.");
+            if (args.Length < 5)
+            {
+                Console.WriteLine("Error: Insufficient arguments.");
+                return;
+            }
+
+            // GitHubトークン、Excelファイルパス、プロジェクト名、所有者、リポジトリを設定
+            //var githubToken = "aaa";
+            //var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport.xlsx";
+            //var projectName = "KanbanTest";
+            //var owner = "nakagawahideaki";
+            //var repo = "test3";
+            var githubToken = args[0];
+            var excelFilePath = args[1];
+            var projectName = args[2];
+            var owner = args[3];
+            var repo = args[4];
+
+            // 一時ファイルパスを仮想的に生成
+            var tempFilePath = Path.GetTempFileName() + ".xlsx"; // 一時ファイルとして.xlsxを付け加える
+
+            // Excelファイルを仮パスにコピー
+            File.Copy(excelFilePath, tempFilePath, true);
+            Console.WriteLine("Copied original Excel file to temporary location.");
+
+            // GitHubProjectUpdaterインスタンスを作成
+            var updater = new GitHubProjectUpdater(githubToken, owner, repo);
+            var projectId = await updater.GetProjectId(projectName);
+
+            if (projectId != null)
+            {
+                // Excelデータに基づいてプロジェクトを更新
+                await updater.UpdateExcelDataToProject(tempFilePath, projectId.ToString());
+                Console.WriteLine("Finished.");
+            }
+
+            // プログラム終了後に一時ファイルを削除
+            File.Delete(tempFilePath);
         }
     }
-}
