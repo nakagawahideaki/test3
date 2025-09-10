@@ -235,8 +235,8 @@ public class Example
         if (!Directory.Exists(tempDirectory))
         {
             Directory.CreateDirectory(tempDirectory);
-            Console.WriteLine(tempDirectory);
         }
+        Console.WriteLine(tempDirectory);
 
         // 一時ファイルパスを仮想的に生成
         var tempFilePath = Path.GetTempFileName() + ".xlsx"; // 一時ファイルとして.xlsxを付け加える
