@@ -29,7 +29,6 @@ jobs:
         # ファイルをダウンロード
         Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
-
         # ファイルサイズを確認
         $fileSize = (Get-Item $excelFilePath).Length
         Write-Host "ファイルサイズ: $fileSize バイト"
@@ -38,42 +37,26 @@ jobs:
         if ($fileSize -eq 0) {
                 Write-Error "ダウンロードしたファイルは空です。"
                 exit 1
-        }
-           
+        } 
+        
         # ダウンロードしたファイルのパスを表示
         Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"
-
-        # ClosedXMLを使ってExcelファイルを読み込む
+        
+        # Excelアプリを起動して、保存する
         try {
-        # ImportExcelモジュールをインストール
-        Install-Module -Name ImportExcel -Force -SkipPublisherCheck -Scope CurrentUser
+          $excel = New-Object -ComObject Excel.Application
+          $excel.Visible = $false  # Excelウィンドウを非表示にする
 
-        # ImportExcelを使ってExcelファイルを読み込む
-        try {
-        $data = Import-Excel -Path $excelFilePath
-        Write-Host "Excelファイルが正常に読み込まれました。"
+          $workbook = $excel.Workbooks.Open($excelFilePath)
 
-        # データを確認するために、最初の数行を表示
-        $data | Select-Object -First 5 | Format-Table
-        }
-        catch {
-        Write-Error "Excelファイルの読み込み中にエラーが発生しました: $_"
-        }
+          # ファイルを再保存する
+          $workbook.SaveAs("$env:TEMP\EditableGitHubExport.xlsx")
+          $workbook.Close($false)
+          $excel.Quit()
 
-        # シート名を出力する
-        foreach ($sheet in $workbook.Worksheets)
-        {
-        Write-Host "シート名: $($sheet.Name)"
-        }
-
-        # シートのデータを表示する（例: 1シートの最初の行を表示）
-        $firstSheet = $workbook.Worksheet(1)
-        $row = $firstSheet.FirstRowUsed()
-        $values = $firstSheet.Row($row).Cells().Select({ $_.GetValue() })
-        Write-Host "最初の行のデータ: $values"
-        }
-        catch {
-        Write-Error "Excelファイルの読み込み中にエラーが発生しました: $_"
+          Write-Host "ファイルを編集可能な状態で保存しました。"
+        } catch {
+          Write-Error "Excel操作中にエラーが発生しました: $_"
         }
     
     - name: Run executable
