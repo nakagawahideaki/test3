@@ -6,7 +6,7 @@ on:
       excel_file_path:
         description: 'Path to Excel file'
         required: true
-        default: 'GitHubExport2.xlsx'
+        default: 'GitHubExport.xlsx'  # デフォルトのファイル名
 
 jobs:
   update_project:
@@ -19,28 +19,39 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.0.x'  # または、プロジェクトで使用している.NETのバージョン
+        dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン
 
-    - name: Download Excel file
+    - name: Download Excel file from SharePoint
       run: |
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
         
-        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
+        # SharePointからExcelファイルをダウンロード
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath -UseBasicP -Credential (New-Object System.Net.NetworkCredential("username", "password"))
+        # 上記の行は、適切な認証情報を利用するためのものです。必要に応じて書き換えてください。
 
     - name: Run executable
       run: |
-        # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
-        # $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
         $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
-        
-        # & $exePath $githubToken $excelFilePath $projectName $owner $repo
+
+        # 実行ファイルが存在するか確認
+        if (-Not (Test-Path $exePath)) {
+          Write-Error "実行ファイルが見つかりません: $exePath"
+          exit 1
+        }
+
+        # 実行するExcelファイルが存在するか確認
+        if (-Not (Test-Path $excelFilePath)) {
+          Write-Error "Excelファイルが見つかりません: $excelFilePath"
+          exit 1
+        }
+
         try {
           & $exePath $githubToken $excelFilePath $projectName $owner $repo
           Write-Host "実行が成功しました。"
