@@ -228,6 +228,16 @@ public class Example
         var owner = args[3];
         var repo = args[4];
 
+        // 一時ディレクトリが存在しない場合は作成
+        string tempDirectory = Path.GetTempPath();
+
+        // 一時ディレクトリが存在しない場合は作成
+        if (!Directory.Exists(tempDirectory))
+        {
+            Directory.CreateDirectory(tempDirectory);
+            Console.WriteLine(tempDirectory);
+        }
+
         // 一時ファイルパスを仮想的に生成
         var tempFilePath = Path.GetTempFileName() + ".xlsx"; // 一時ファイルとして.xlsxを付け加える
         Console.WriteLine(excelFilePath);
