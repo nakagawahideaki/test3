@@ -44,6 +44,10 @@ jobs:
         } else {
         Write-Host "ファイルが存在しません: $excelFilePath"
         }
+        # 移動またはリネームをする場合
+        $destinationPath = "C:\Users\nakagawa\Desktop\GitHubExport3.xlsx"
+        Move-Item -Path "$env:TEMP\GitHubExport.xlsx" -Destination $destinationPath
+        Write-Host "ファイルが移動されました: $destinationPath"
 
     - name: Run executable
       run: |
