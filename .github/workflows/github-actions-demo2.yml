@@ -21,17 +21,23 @@ jobs:
       with:
         dotnet-version: '8.0.x'  # または、プロジェクトで使用している.NETのバージョン
 
+    - name: Download Excel file
+      run: |
+        $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
+        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
+
     - name: Run executable
       run: |
         # $githubToken = "${{ secrets.GITHUB_TOKEN }}"
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
-        $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
+        # $excelFilePath = "${{ github.workspace }}/${{ github.event.inputs.excel_file_path }}"
+        # $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
-        # $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
-        $exePath = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
-
+        $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
+        
         & $exePath $githubToken $excelFilePath $projectName $owner $repo
       shell: pwsh
