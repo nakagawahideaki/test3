@@ -20,7 +20,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン
-
+        
+    - name: Install ImportExcel module
+      run: |
+        Install-Module -Name ImportExcel -Force -SkipPublisherCheck -Scope CurrentUser
+    
     - name: Download Excel file from SharePoint
       run: |
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
