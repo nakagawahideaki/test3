@@ -6,7 +6,7 @@ on:
       excel_file_path:
         description: 'Path to Excel file'
         required: true
-        default: 'GitHubExport.xlsx'  # デフォルトのファイル名
+        default: 'GitHubExport.xlsx'
 
 jobs:
   update_project:
@@ -26,9 +26,8 @@ jobs:
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
         
-        # SharePointからExcelファイルをダウンロード
-        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath -UseBasicP -Credential (New-Object System.Net.NetworkCredential("username", "password"))
-        # 上記の行は、適切な認証情報を利用するためのものです。必要に応じて書き換えてください。
+        # ファイルをダウンロード
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
     - name: Run executable
       run: |
