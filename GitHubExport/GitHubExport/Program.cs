@@ -239,20 +239,20 @@ public class Example
 
 
         // ClosedXMLを使用して元のExcelファイルを開く
-        using (var originalWorkbook = new XLWorkbook(excelFilePath))
-        {
-            var originalWorksheet = originalWorkbook.Worksheet(1); // 1番目のシートを取得
-            Console.WriteLine("Contents of the original Excel file:");
+        //using (var originalWorkbook = new XLWorkbook(excelFilePath))
+        //{
+        //    var originalWorksheet = originalWorkbook.Worksheet(1); // 1番目のシートを取得
+        //    Console.WriteLine("Contents of the original Excel file:");
 
-            // 行数を取得し、それぞれのセルの値を表示
-            var lastRowUsed = originalWorksheet.LastRowUsed();
-            for (int row = 1; row <= lastRowUsed.RowNumber(); row++)
-            {
-                var title = originalWorksheet.Cell(row, 1).Value.ToString();
-                var body = originalWorksheet.Cell(row, 2).Value.ToString();
-                Console.WriteLine($"Row {row}: Title = {title}, Body = {body}");
-            }
-        }
+        //    // 行数を取得し、それぞれのセルの値を表示
+        //    var lastRowUsed = originalWorksheet.LastRowUsed();
+        //    for (int row = 1; row <= lastRowUsed.RowNumber(); row++)
+        //    {
+        //        var title = originalWorksheet.Cell(row, 1).Value.ToString();
+        //        var body = originalWorksheet.Cell(row, 2).Value.ToString();
+        //        Console.WriteLine($"Row {row}: Title = {title}, Body = {body}");
+        //    }
+        //}
 
         // ClosedXMLを使用して仮コピーしたExcelファイルを開く
         using (var tempWorkbook = new XLWorkbook(tempFilePath))
@@ -284,6 +284,6 @@ public class Example
         }
 
         // プログラム終了後に一時ファイルを削除
-        File.Delete(tempFilePath);
+        //File.Delete(tempFilePath);
     }
 }
