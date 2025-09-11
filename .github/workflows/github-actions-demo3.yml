@@ -1,0 +1,74 @@
+name: Update GitHub Project from Excel
+
+on:
+  workflow_dispatch:
+    inputs:
+      excel_file_path:
+        description: 'Path to Excel file'
+        required: true
+        default: 'GitHubExport.xlsx'
+
+jobs:
+  update_project:
+    runs-on: windows-latest
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン
+            
+    - name: Download Excel file from SharePoint
+      run: |
+        $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
+        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
+        
+        # ファイルをダウンロード
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
+
+        # ファイルサイズを確認
+        $fileSize = (Get-Item $excelFilePath).Length
+        Write-Host "ファイルサイズ: $fileSize バイト"
+
+        # ファイルサイズが0の場合はエラー
+        if ($fileSize -eq 0) {
+                Write-Error "ダウンロードしたファイルは空です。"
+                exit 1
+        } 
+        
+        # ダウンロードしたファイルのパスを表示
+        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"       
+    
+    - name: Run executable
+      run: |
+        $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
+        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
+        $projectName = 'KanbanTest'
+        $owner = "${{ github.repository_owner }}"
+        $repo = "${{ github.event.repository.name }}"
+
+        $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
+
+        # 実行ファイルが存在するか確認
+        if (-Not (Test-Path $exePath)) {
+          Write-Error "実行ファイルが見つかりません: $exePath"
+          exit 1
+        }
+
+        # 実行するExcelファイルが存在するか確認
+        if (-Not (Test-Path $excelFilePath)) {
+          Write-Error "Excelファイルが見つかりません: $excelFilePath"
+          exit 1
+        }
+
+        try {
+          & $exePath $githubToken $excelFilePath $projectName $owner $repo
+          Write-Host "実行が成功しました。"
+        } catch {
+          Write-Error "実行中にエラーが発生しました: $_"
+          exit 1  # 実行が失敗した場合は、ワークフローを失敗させる
+        }
+      shell: pwsh
