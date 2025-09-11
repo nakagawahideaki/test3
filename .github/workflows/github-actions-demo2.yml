@@ -42,24 +42,18 @@ jobs:
         # ダウンロードしたファイルのパスを表示
         Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"   
         
+        # ClosedXMLを使用するためのDLLを読み込む
+        $dllPath = "${{ github.workspace }}\path\to\your\bin\Release\net8.0\ClosedXML.dll"
+        Add-Type -Path $dllPath
 
         # Excelファイルを操作
-        # 閉じた状態でClosedXMLで開く
-        Add-Type -AssemblyName "System.IO"
-        $tempFilePath = $excelFilePath
-
         try {
-            # ClosedXMLを使ったExcelファイルの操作
-            $workbook = [ClosedXML.Excel.XLWorkbook]::new($tempFilePath)
-            $worksheet = $workbook.Worksheet(1) # 最初のシートを取得
-            
-            # A1の値を取得
+            $workbook = [ClosedXML.Excel.XLWorkbook]::new($excelFilePath)
+            $worksheet = $workbook.Worksheet(1)
             $cellValue = $worksheet.Cell("A1").Value
             Write-Host "A1の値: $cellValue"
-            
-            # A2に新しい値を書き込み
             $worksheet.Cell("A2").Value = "新しい値"
-            $workbook.Save() # 上書き保存
+            $workbook.Save()
             Write-Host "Excelファイルを更新しました。"
         }
         catch {
