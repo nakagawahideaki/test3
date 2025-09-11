@@ -229,6 +229,13 @@ public class Example
         var owner = args[3];
         var repo = args[4];
 
+        if (!Directory.Exists(excelFilePath))
+        {
+            Directory.CreateDirectory(excelFilePath);
+            Console.WriteLine(excelFilePath + " No");
+        }
+        Console.WriteLine(excelFilePath);
+
         // 一時ディレクトリが存在しない場合は作成
         string tempDirectory = Path.GetTempPath();
 
