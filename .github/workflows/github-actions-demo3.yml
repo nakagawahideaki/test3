@@ -19,28 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン
-            
-    - name: Download Excel file from SharePoint
-      run: |
-        $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
-        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
-        
-        # ファイルをダウンロード
-        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
-
-        # ファイルサイズを確認
-        $fileSize = (Get-Item $excelFilePath).Length
-        Write-Host "ファイルサイズ: $fileSize バイト"
-
-        # ファイルサイズが0の場合はエラー
-        if ($fileSize -eq 0) {
-                Write-Error "ダウンロードしたファイルは空です。"
-                exit 1
-        } 
-        
-        # ダウンロードしたファイルのパスを表示
-        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"       
+        dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン           
     
     - name: Run executable
       run: |
