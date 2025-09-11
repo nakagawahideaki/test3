@@ -42,9 +42,29 @@ jobs:
         # ダウンロードしたファイルのパスを表示
         Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"   
         
-        using ClosedXML.Excel;
-        # Excelファイルを開く
-        var workbook = new XLWorkbook(excelFilePath);
+
+        # Excelファイルを操作
+        # 閉じた状態でClosedXMLで開く
+        Add-Type -AssemblyName "System.IO"
+        $tempFilePath = $excelFilePath
+
+        try {
+            # ClosedXMLを使ったExcelファイルの操作
+            $workbook = [ClosedXML.Excel.XLWorkbook]::new($tempFilePath)
+            $worksheet = $workbook.Worksheet(1) # 最初のシートを取得
+            
+            # A1の値を取得
+            $cellValue = $worksheet.Cell("A1").Value
+            Write-Host "A1の値: $cellValue"
+            
+            # A2に新しい値を書き込み
+            $worksheet.Cell("A2").Value = "新しい値"
+            $workbook.Save() # 上書き保存
+            Write-Host "Excelファイルを更新しました。"
+        }
+        catch {
+            Write-Host "エラーが発生しました: $_"
+        }
         
     - name: Run executable
       run: |
