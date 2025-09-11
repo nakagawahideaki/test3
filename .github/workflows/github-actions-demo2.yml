@@ -73,3 +73,12 @@ jobs:
           exit 1  # 実行が失敗した場合は、ワークフローを失敗させる
         }
       shell: pwsh
+
+    - name: Clean up
+      run: |
+        $excelFilePath = "${{ github.workspace }}\GitHubExport.xlsx"  # 一時フォルダーに保存したファイルのパス
+        if (Test-Path $excelFilePath) {
+            Remove-Item $excelFilePath -Force
+            Write-Host "一時ファイルを削除しました。"
+        }
+      shell: pwsh
