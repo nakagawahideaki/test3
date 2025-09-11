@@ -26,16 +26,12 @@ jobs:
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
         # $excelFilePath = "$env:TEMP\GitHubExportTmp.xlsx"  # 一時フォルダーに保存するパス
         $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"  # workspaceに保存するパス
-        
-        # ファイルサイズを確認１
-        $fileSize = (Get-Item $excelFilePath).Length
-        Write-Host "ファイルサイズ: $fileSize バイト"
-        
+                
         # ファイルをダウンロード
         Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
         # Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath -UseBasicPipelines
 
-        # ファイルサイズを確認２
+        # ファイルサイズを確認
         $fileSize = (Get-Item $excelFilePath).Length
         Write-Host "ファイルサイズ: $fileSize バイト"
 
