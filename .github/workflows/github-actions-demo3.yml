@@ -29,7 +29,7 @@ jobs:
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
 
-        $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\GitHubExport.exe"
+        $exePath = "${{ github.workspace }}\GitHubExport\GitHubExport - コピー\bin\Release\net8.0\GitHubExport.exe"
 
         # 実行ファイルが存在するか確認
         if (-Not (Test-Path $exePath)) {
