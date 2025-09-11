@@ -43,7 +43,7 @@ jobs:
         Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"   
         
         # ClosedXMLを使用するためのDLLを読み込む
-        $dllPath = "${{ github.workspace }}\path\to\your\bin\Release\net8.0\ClosedXML.dll"
+        $dllPath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\ClosedXML.dll"
         Add-Type -Path $dllPath
 
         # Excelファイルを操作
