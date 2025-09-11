@@ -27,11 +27,15 @@ jobs:
         # $excelFilePath = "$env:TEMP\GitHubExportTmp.xlsx"  # 一時フォルダーに保存するパス
         $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"  # workspaceに保存するパス
         
+        # ファイルサイズを確認１
+        $fileSize = (Get-Item $excelFilePath).Length
+        Write-Host "ファイルサイズ: $fileSize バイト"
+        
         # ファイルをダウンロード
         Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
         # Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath -UseBasicPipelines
 
-        # ファイルサイズを確認
+        # ファイルサイズを確認２
         $fileSize = (Get-Item $excelFilePath).Length
         Write-Host "ファイルサイズ: $fileSize バイト"
 
