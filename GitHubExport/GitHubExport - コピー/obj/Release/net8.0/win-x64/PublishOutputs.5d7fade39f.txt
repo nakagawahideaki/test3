@@ -1,0 +1,2 @@
+C:\Users\nakagawa\source\repos\GitHubExport\GitHubExport\bin\Release\net8.0\publish\win-x64\GitHubExport.pdb
+C:\Users\nakagawa\source\repos\GitHubExport\GitHubExport\bin\Release\net8.0\publish\win-x64\GitHubExport.exe
