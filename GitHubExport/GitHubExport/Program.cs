@@ -247,14 +247,14 @@ public class Example
         //}
         //Console.WriteLine(tempDirectory);
 
-        // 一時ファイルパスを仮想的に生成
-        var tempFilePath = Path.GetTempFileName() + ".xlsx"; // 一時ファイルとして.xlsxを付け加える
-        Console.WriteLine(excelFilePath);
-        Console.WriteLine(tempFilePath);
+        //// 一時ファイルパスを仮想的に生成
+        //var tempFilePath = Path.GetTempFileName() + ".xlsx"; // 一時ファイルとして.xlsxを付け加える
+        //Console.WriteLine(excelFilePath);
+        //Console.WriteLine(tempFilePath);
 
-        // Excelファイルを仮パスにコピー
-        File.Copy(excelFilePath, tempFilePath, true);
-        Console.WriteLine("Copied original Excel file to temporary location.");
+        //// Excelファイルを仮パスにコピー
+        //File.Copy(excelFilePath, tempFilePath, true);
+        //Console.WriteLine("Copied original Excel file to temporary location.");
 
 
         // ClosedXMLを使用して元のExcelファイルを開く
@@ -274,7 +274,7 @@ public class Example
         //}
 
         // ClosedXMLを使用して仮コピーしたExcelファイルを開く
-        using (var tempWorkbook = new XLWorkbook(tempFilePath))
+        using (var tempWorkbook = new XLWorkbook(excelFilePath))
         {
             var tempWorksheet = tempWorkbook.Worksheet(1); // 1番目のシートを取得
             Console.WriteLine("Contents of the temporary Excel file:");
@@ -298,11 +298,11 @@ public class Example
         if (projectId != null)
         {
             // Excelデータに基づいてプロジェクトを更新
-            await updater.UpdateExcelDataToProject(tempFilePath, projectId.ToString());
+            await updater.UpdateExcelDataToProject(excelFilePath, projectId.ToString());
             Console.WriteLine("Finished.");
         }
 
         // プログラム終了後に一時ファイルを削除
-        File.Delete(tempFilePath);
+        File.Delete(excelFilePath);
     }
 }
