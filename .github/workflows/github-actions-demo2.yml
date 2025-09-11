@@ -46,7 +46,8 @@ jobs:
     - name: Run executable
       run: |
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
-        $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # ダウンロードしたファイルのパス
+        # $excelFilePath = "$env:TEMP\GitHubExport.xlsx" # ダウンロードしたファイルのパス
+        $excelFilePath = "${{ github.workspace }}\GitHubExport.xlsx" # ダウンロードしたファイルのパス
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
