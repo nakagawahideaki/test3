@@ -208,6 +208,7 @@ mutation ($projectId: ID!, $contentId: ID!) {
 // 実行例
 public class Example
 {
+    // GitHubAPIから呼び出し。ローカルのエクセルファイル。
     public static async Task Main(string[] args)
     {
         if (args.Length < 5)
@@ -218,12 +219,12 @@ public class Example
 
         // GitHubトークン、Excelファイルパス、プロジェクト名、所有者、リポジトリを設定
         //var githubToken = "aaa";
-        //var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport.xlsx";
+        var excelFilePath = @"C:\Users\nakagawa\Desktop\GitHubExport.xlsx";
         //var projectName = "KanbanTest";
         //var owner = "nakagawahideaki";
         //var repo = "test3";
         var githubToken = args[0];
-        var excelFilePath = args[1];
+        //var excelFilePath = args[1];
         var projectName = args[2];
         var owner = args[3];
         var repo = args[4];
@@ -235,6 +236,7 @@ public class Example
         if (!Directory.Exists(tempDirectory))
         {
             Directory.CreateDirectory(tempDirectory);
+            Console.WriteLine(tempDirectory + " No");
         }
         Console.WriteLine(tempDirectory);
 
