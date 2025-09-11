@@ -47,7 +47,8 @@ jobs:
       run: |
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
         # $excelFilePath = "$env:TEMP\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
-        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
+        # $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
+        $excelFilePath = "${{ github.workspace }}\GitHubExport.xlsx" # ダウンロードしたファイルのパス
         
         $fileSize = (Get-Item $excelFilePath).Length
         Write-Host "ファイルサイズ: $fileSize バイト"
