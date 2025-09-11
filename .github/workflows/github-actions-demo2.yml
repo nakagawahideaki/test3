@@ -26,15 +26,8 @@ jobs:
         $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
         $excelFilePath = "$env:TEMP\GitHubExport.xlsx"  # 一時フォルダーに保存するパス
         
-        # ヘッダーに認証トークンを追加
-        $token = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
-        $headers = @{
-        Authorization = "Bearer $token"
-        }
-        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath -Headers $headers
-
         # ファイルをダウンロード
-        # Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
         # ファイルサイズを確認
         $fileSize = (Get-Item $excelFilePath).Length
@@ -47,25 +40,7 @@ jobs:
         } 
         
         # ダウンロードしたファイルのパスを表示
-        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"   
-        
-        # ClosedXMLを使用するためのDLLを読み込む
-        $dllPath = "${{ github.workspace }}\GitHubExport\GitHubExport\bin\Release\net8.0\ClosedXML.dll"
-        Add-Type -Path $dllPath
-
-        # Excelファイルを操作
-        try {
-            $workbook = [ClosedXML.Excel.XLWorkbook]::new($excelFilePath)
-            $worksheet = $workbook.Worksheet(1)
-            $cellValue = $worksheet.Cell("A1").Value
-            Write-Host "A1の値: $cellValue"
-            $worksheet.Cell("A2").Value = "新しい値"
-            $workbook.Save()
-            Write-Host "Excelファイルを更新しました。"
-        }
-        catch {
-            Write-Host "エラーが発生しました: $_"
-        }
+        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"           
         
     - name: Run executable
       run: |
