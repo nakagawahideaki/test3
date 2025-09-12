@@ -42,22 +42,7 @@ jobs:
         } 
         
         # ダウンロードしたファイルのパスを表示
-        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"           
-
-    - name: Import Excel module
-      run: Install-Module -Name ImportExcel -Scope CurrentUser -Force
-      shell: pwsh
-      
-    - name: Check Excel file contents
-      run: |
-        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"
-        if (Test-Path $excelFilePath) {
-          Write-Host "Excelファイルが見つかりました: $excelFilePath"
-        } else {
-          Write-Error "Excelファイルが見つかりません: $excelFilePath"
-          exit 1
-        }
-      shell: pwsh
+        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath" 
               
     - name: Run executable
       run: |
