@@ -51,17 +51,12 @@ jobs:
     - name: Check Excel file contents
       run: |
         $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"
-
-        # Excelファイルが存在するか確認
-        if (-Not (Test-Path $excelFilePath)) {
+        if (Test-Path $excelFilePath) {
+          Write-Host "Excelファイルが見つかりました: $excelFilePath"
+        } else {
           Write-Error "Excelファイルが見つかりません: $excelFilePath"
           exit 1
         }
-
-        # Excelファイルの内容を確認
-        $data = Import-Excel -Path $excelFilePath
-        Write-Host "Excelファイルの内容:"
-        $data | Format-Table -AutoSize
       shell: pwsh
               
     - name: Run executable
