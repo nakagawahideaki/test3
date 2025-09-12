@@ -11,7 +11,7 @@ on:
 jobs:
   update_project:
     runs-on: windows-latest
-
+      
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -20,51 +20,40 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '8.0.x'  # プロジェクトに使用している.NETのバージョン
-
-    - name: Get Access Token
-      id: token
-      run: |
-        $tenantId = "${{ secrets.AZURE_TENANT_ID }}"
-        $clientId = "${{ secrets.AZURE_CLIENT_ID }}"
-        $clientSecret = "${{ secrets.AZURE_CLIENT_SECRET }}"
-
-        $body = @{
-            client_id     = $clientId
-            client_secret = $clientSecret
-            scope         = "https://graph.microsoft.com/.default"
-            grant_type    = "client_credentials"
-        }
-
-        $response = Invoke-RestMethod -Method Post -Uri "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token" -Body $body
-        Write-Output $response.access_token
-      shell: pwsh
-
+            
     - name: Download Excel file from SharePoint
       run: |
-        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"
-        $fileUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
-        
-        $headers = @{
-            "Authorization" = "Bearer $($steps.token.outputs.access_token)"
-        }
+        $excelUrl = "https://pcajp-my.sharepoint.com/:x:/r/personal/nakagawa_pca_co_jp/Documents/GitHubExport.xlsx?d=we274b615ed994e13afde3c411c7caef3&csf=1&web=1&e=mYPZT8"
+        # $excelFilePath = "$env:TEMP\GitHubExportTmp.xlsx"  # 一時フォルダーに保存するパス
+        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"  # workspaceに保存するパス
 
         # ファイルをダウンロード
-        Invoke-WebRequest -Uri $fileUrl -OutFile $excelFilePath -Headers $headers -Method Get
+        # Start-BitsTransfer -Source $excelUrl -Destination $excelFilePath
+        Invoke-WebRequest -Uri $excelUrl -OutFile $excelFilePath
 
-        # ダウンロードしたファイルのサイズを確認
+        # ファイルサイズを確認
         $fileSize = (Get-Item $excelFilePath).Length
-        if ($fileSize -eq 0) {
-            Write-Error "ダウンロードしたファイルは空です。"
-            exit 1
-        }
-        
-        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"
+        Write-Host "ファイルサイズ: $fileSize バイト"
 
+        # ファイルサイズが0の場合はエラー
+        if ($fileSize -eq 0) {
+                Write-Error "ダウンロードしたファイルは空です。"
+                exit 1
+        } 
+        
+        # ダウンロードしたファイルのパスを表示
+        Write-Host "ダウンロードしたExcelファイルのパス: $excelFilePath"           
+        
     - name: Run executable
       run: |
         $githubToken = "${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}"
-        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"
-
+        # $excelFilePath = "$env:TEMP\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
+        # $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
+        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx" # ダウンロードしたファイルのパス
+        
+        $fileSize = (Get-Item $excelFilePath).Length
+        Write-Host "ファイルサイズ: $fileSize バイト"
+        
         $projectName = 'KanbanTest'
         $owner = "${{ github.repository_owner }}"
         $repo = "${{ github.event.repository.name }}"
@@ -73,28 +62,28 @@ jobs:
 
         # 実行ファイルが存在するか確認
         if (-Not (Test-Path $exePath)) {
-            Write-Error "実行ファイルが見つかりません: $exePath"
-            exit 1
+          Write-Error "実行ファイルが見つかりません: $exePath"
+          exit 1
         }
 
         # 実行するExcelファイルが存在するか確認
         if (-Not (Test-Path $excelFilePath)) {
-            Write-Error "Excelファイルが見つかりません: $excelFilePath"
-            exit 1
+          Write-Error "Excelファイルが見つかりません: $excelFilePath"
+          exit 1
         }
 
         try {
-            & $exePath $githubToken $excelFilePath $projectName $owner $repo
-            Write-Host "実行が成功しました。"
+          & $exePath $githubToken $excelFilePath $projectName $owner $repo
+          Write-Host "実行が成功しました。"
         } catch {
-            Write-Error "実行中にエラーが発生しました: $_"
-            exit 1  # 実行が失敗した場合は、ワークフローを失敗させる
+          Write-Error "実行中にエラーが発生しました: $_"
+          exit 1  # 実行が失敗した場合は、ワークフローを失敗させる
         }
       shell: pwsh
 
     - name: Clean up
       run: |
-        $excelFilePath = "${{ github.workspace }}\GitHubExportTmp.xlsx"
+        $excelFilePath = "${{ github.workspace }}\GitHubExport.xlsx"  # 一時フォルダーに保存したファイルのパス
         if (Test-Path $excelFilePath) {
             Remove-Item $excelFilePath -Force
             Write-Host "一時ファイルを削除しました。"
